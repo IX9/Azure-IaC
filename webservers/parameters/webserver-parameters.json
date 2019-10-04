@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+    "cardinalinstance": {
+            "type": "string",
+            "value":"1",
+            "defaultValue":"1",
+            "allowedValues": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+                
+            ],
+            "metadata": {
+                "description": "Instance number for the VM 1-9"
+            }
+        },
+
+        "adminUsername": {
+            "type": "string",
+            "value":"localadmin",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "string",
+            "value":"L0calpassword",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "dnsLabelPrefix": {
+            "type": "string",
+            "value":"TSOCWEB0",
+            "metadata": {
+                "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+            }
+        },
+        "windowsOSVersion": {
+            "type": "string",
+            "value":"2019-Datacenter",
+            "defaultValue": "2019-Datacenter",
+            "allowedValues": [
+                "2008-R2-SP1",
+                "2012-Datacenter",
+                "2012-R2-Datacenter",
+                "2016-Nano-Server",
+                "2016-Datacenter-with-Containers",
+                "2016-Datacenter",
+                "2019-Datacenter"
+            ],
+            "metadata": {
+                "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
+            }
+        },
+        "location": {
+            "type": "string",
+            "value": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    }
+}
