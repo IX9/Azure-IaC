@@ -2,10 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
 "parameters": {
-
     "cardinalinstance": {
             "type": "string",
-            "value":"1",
             "defaultValue":"1",
             "allowedValues": [
                 "1",
@@ -26,28 +24,21 @@
 
         "adminUsername": {
             "type": "string",
-            "value":"localadmin",
-            "metadata": {
-                "description": "Username for the Virtual Machine."
-            }
+            "defaultvalue":"localadmin",
+            
         },
         "adminPassword": {
             "type": "string",
-            "value":"L0calpassword",
-            "metadata": {
-                "description": "Password for the Virtual Machine."
-            }
+            "defaultvalue":"L0calpassword",
+            
         },
         "dnsLabelPrefix": {
             "type": "string",
-            "value":"TSOCWEB0",
-            "metadata": {
-                "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
-            }
+            "defaultvalue":"[concat('tsocweb0', parameters('cardinalinstance'))]",
+            
         },
         "windowsOSVersion": {
             "type": "string",
-            "value":"2019-Datacenter",
             "defaultValue": "2019-Datacenter",
             "allowedValues": [
                 "2008-R2-SP1",
@@ -57,27 +48,18 @@
                 "2016-Datacenter-with-Containers",
                 "2016-Datacenter",
                 "2019-Datacenter"
-            ],
-            "metadata": {
-                "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
-            }
-        },
-        "location": {
-            "type": "string",
-            "value": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Location for all resources."
-            }
+            ]
+            
         }
+        
     },
-
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'storage')]",
         "nicName": "[concat('TSOCWEB0', parameters('cardinalinstance'), '-NIC')]",
         "addressPrefix": "10.0.0.0/16",
         "subnetName": "Subnet",
         "subnetPrefix": "10.0.0.0/24",
-        "publicIPAddressName": "IP-TSOCWEB0",
+        "publicIPAddressName": "[concat('TSOCWEB0', parameters('cardinalinstance'), '-IP')]",
         "vmname": "[concat('TSOCWEB0', parameters('cardinalinstance'))]",
         "virtualNetworkName": "VNET-BackEnd",
                 "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
@@ -87,7 +69,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-11-01",
             "name": "[variables('storageAccountName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS"
             },
@@ -98,11 +80,11 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
             "name": "[variables('publicIPAddressName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[parameters('vmname')]"
+                    "domainNameLabel": "[tolower(variables('vmname'))]"
                 }
             }
         },
@@ -110,7 +92,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2018-11-01",
             "name": "[variables('virtualNetworkName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -131,7 +113,7 @@
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-11-01",
             "name": "[variables('nicName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
@@ -139,7 +121,7 @@
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "ipconfig1",
+                        "name": "[concat('TSOCWEB0', parameters('cardinalinstance'), '-IPCONFIG')]",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
@@ -157,7 +139,7 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
             "name": "[variables('vmName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
