@@ -1,4 +1,4 @@
-# ST81-IaaC
+# ST81-IaC
 
 
 ### Azure CLI
