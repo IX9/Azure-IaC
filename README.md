@@ -1,4 +1,4 @@
-# ST81-IaC
+# Azure-IaC Test templates
 
 
 ### Azure CLI
